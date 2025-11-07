@@ -136,4 +136,6 @@ dist
 .pnp.*
 
 logs
-config
+/config
+/helper.txt
+
