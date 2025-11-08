@@ -1,12 +1,17 @@
 import config from "config";
 import express, { Request, Response } from "express";
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
-
+import categoryRouter from "./category/category-router";
+    
 const app = express();
-
+app.use(express.json());
 app.get("/", (req: Request, res: Response) => {
     res.json({ port: config.has("server.port") ? config.get<number>("server.port") : 5502 });
 });
+
+
+
+app.use('/categories',categoryRouter)
 
 app.use(globalErrorHandler);
 
