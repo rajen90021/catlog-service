@@ -9,12 +9,15 @@ import { AuthRequest } from "../common/types";
 import { Roles } from "../common/constants";
 import { UploadedFile } from "express-fileupload";
 import mongoose from "mongoose";
-import { Filter, Product } from "./product-types";
+import { Filter, Product, ProductEvents } from "./product-types";
+import { MessageProducerBroker } from "../common/types/broker";
+import { mapToObject } from "../utils";
 
 export class ProductController {
     constructor(
         private productService: ProductService,
         private cloudinaryStorage: CloudinaryStorage,
+        private broker: MessageProducerBroker,
     ) {}
 
     create = async (req: Request, res: Response, next: NextFunction) => {
@@ -65,6 +68,26 @@ export class ProductController {
             };
 
             const response = await this.productService.createProduct(product as Product);
+ // Send product to kafka.
+        // todo: move topic name to the config
+
+        await this.broker.sendMessage(
+            "product",
+            JSON.stringify({
+                event_type: ProductEvents.PRODUCT_CREATE,
+                data: {
+                    id: response._id,
+                    // todo: fix the typescript error
+                    priceConfiguration: mapToObject(
+                        response.priceConfiguration as unknown as Map<
+                            string,
+                            any
+                        >,
+                    ),
+                },
+            }),
+        );
+
             res.status(201).json(response);
         } catch (error) {
             console.error("Product creation error:", error);
@@ -137,6 +160,23 @@ export class ProductController {
 
     const updatedProduct = await this.productService.updateProduct(productId, productToUpdate as Product);
 
+        // Send product to kafka.
+        // todo: move topic name to the config
+        await this.broker.sendMessage(
+            "product",
+            JSON.stringify({
+                event_type: ProductEvents.PRODUCT_UPDATE,
+                data: {
+                    id: updatedProduct._id,
+                    priceConfiguration: mapToObject(
+                        updatedProduct.priceConfiguration as unknown as Map<
+                            string,
+                            any
+                        >,
+                    ),
+                },
+            }),
+        );
     res.json({
       message: "Product updated successfully",
       product: updatedProduct,
