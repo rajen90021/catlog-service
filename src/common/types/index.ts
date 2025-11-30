@@ -1,14 +1,14 @@
-import { Request } from "express";
+import { Request } from 'express';
 
 export type AuthCookie = {
-    accessToken: string;
+  accessToken: string;
 };
 
 export interface AuthRequest extends Request {
-    auth: {
-        sub: string;
-        role: string;
-        id?: string;
-        tenant: string;
-    };
+  auth: {
+    sub: string;
+    role: string;
+    id?: string;
+    tenant: string;
+  };
 }
