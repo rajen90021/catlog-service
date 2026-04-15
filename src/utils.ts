@@ -1,8 +1,6 @@
 export function mapToObject(map: Map<string, any>) {
-  const obj = {};
+  const obj: Record<string, any> = {};
   for (const [key, value] of map) {
-    // todo: fix this type error
-    // @ts-ignore
     obj[key] = value instanceof Map ? mapToObject(value) : value;
   }
   return obj;

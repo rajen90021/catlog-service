@@ -1,10 +1,10 @@
 [
-    {
-        "name": "Is Hit",
-        "value": true
-    },
-    {
-        "name": "Spiciness",
-        "value": "Hot"
-    }
+  {
+    "name": "Is Hit",
+    "value": true
+  },
+  {
+    "name": "Spiciness",
+    "value": "Hot"
+  }
 ]
